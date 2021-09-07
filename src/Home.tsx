@@ -198,7 +198,7 @@ const Home = (props: HomeProps) => {
         
         <MintContainer>
           {!wallet.connected ? (
-            <ConnectButton>Connect Wallet</ConnectButton>
+            <ConnectButton>connect wallet</ConnectButton>
           ) : (
             <div>
               <MintButton
@@ -229,7 +229,7 @@ const Home = (props: HomeProps) => {
           )}
         </MintContainer>
         {wallet.connected && itemsRemaining > 0 && (
-          <div className="my-3 text-white" style={{fontStyle: "italic"}}>Items Remaining: {itemsRemaining}</div>
+          <div className="my-3 text-white" style={{fontStyle: "italic"}}>items remaining: {itemsRemaining}</div>
         )}
       </div>
 
