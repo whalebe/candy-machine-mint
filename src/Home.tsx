@@ -21,6 +21,8 @@ import {
 
 const ConnectButton = styled(WalletDialogButton)``;
 
+const PageWrapper = styled.div``;
+
 const CounterText = styled.span``; // add your styles here
 
 const MintContainer = styled.div``; // add your styles here
@@ -41,6 +43,7 @@ const Home = (props: HomeProps) => {
   const [isActive, setIsActive] = useState(false); // true when countdown completes
   const [isSoldOut, setIsSoldOut] = useState(false); // true when items remaining is zero
   const [isMinting, setIsMinting] = useState(false); // true when user got to press MINT
+  const [itemsRemaining, setItemsRemaining] = useState(0);
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -152,6 +155,7 @@ const Home = (props: HomeProps) => {
           props.connection
         );
 
+      setItemsRemaining(itemsRemaining);
       setIsSoldOut(itemsRemaining === 0);
       setStartDate(goLiveDate);
       setCandyMachine(candyMachine);
@@ -159,43 +163,57 @@ const Home = (props: HomeProps) => {
   }, [wallet, props.candyMachineId, props.connection]);
 
   return (
-    <main>
-      {wallet.connected && (
-        <p>Address: {shortenAddress(wallet.publicKey?.toBase58() || "")}</p>
-      )}
-
-      {wallet.connected && (
-        <p>Balance: {(balance || 0).toLocaleString()} SOL</p>
-      )}
-
-      <MintContainer>
-        {!wallet.connected ? (
-          <ConnectButton>Connect Wallet</ConnectButton>
-        ) : (
-          <MintButton
-            disabled={isSoldOut || isMinting || !isActive}
-            onClick={onMint}
-            variant="contained"
-          >
-            {isSoldOut ? (
-              "SOLD OUT"
-            ) : isActive ? (
-              isMinting ? (
-                <CircularProgress />
-              ) : (
-                "MINT"
-              )
-            ) : (
-              <Countdown
-                date={startDate}
-                onMount={({ completed }) => completed && setIsActive(true)}
-                onComplete={() => setIsActive(true)}
-                renderer={renderCounter}
-              />
-            )}
-          </MintButton>
+    <PageWrapper
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{textAlign:"center"}}>
+        {wallet.connected && (
+          <>
+            {/* <p>Address: {shortenAddress(wallet.publicKey?.toBase58() || "")}</p> */}
+            <div>Wallet: {wallet.publicKey?.toBase58() || ""}</div>
+          </>
         )}
-      </MintContainer>
+        {wallet.connected && (
+          <div>Balance: {(balance || 0).toLocaleString()} SOL</div>
+        )}
+
+        <MintContainer>
+          {!wallet.connected ? (
+            <ConnectButton>Connect Wallet</ConnectButton>
+          ) : (
+            <div>
+              <MintButton
+                disabled={isSoldOut || isMinting || !isActive}
+                onClick={onMint}
+                variant="contained"
+              >
+                {isSoldOut ? (
+                  "SOLD OUT"
+                ) : isActive ? (
+                  isMinting ? (
+                    <CircularProgress />
+                  ) : (
+                    "MINT"
+                  )
+                ) : (
+                  <Countdown
+                    date={startDate}
+                    onMount={({ completed }) => completed && setIsActive(true)}
+                    onComplete={() => setIsActive(true)}
+                    renderer={renderCounter}
+                  />
+                )}
+              </MintButton>
+              <div>Items Remaining: {itemsRemaining}</div>
+            </div>
+          )}
+        </MintContainer>
+      </div>
 
       <Snackbar
         open={alertState.open}
@@ -209,7 +227,7 @@ const Home = (props: HomeProps) => {
           {alertState.message}
         </Alert>
       </Snackbar>
-    </main>
+    </PageWrapper>
   );
 };
 
