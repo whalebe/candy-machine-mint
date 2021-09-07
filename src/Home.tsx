@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Countdown from "react-countdown";
-import { Button, CircularProgress, Snackbar } from "@material-ui/core";
+import { CircularProgress, Snackbar } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 
 import * as anchor from "@project-serum/anchor";
@@ -16,10 +16,14 @@ import {
   awaitTransactionSignatureConfirmation,
   getCandyMachineState,
   mintOneToken,
-  // shortenAddress,
+  shortenAddress,
 } from "./candy-machine";
+import NavbarCustom from "./NavbarCustom";
+import Button from "react-bootstrap/esm/Button";
 
-const ConnectButton = styled(WalletDialogButton)``;
+const ConnectButton = styled(WalletDialogButton)`
+  background-color: rgb(76,220,188) !important;
+`;
 
 const PageWrapper = styled.div``;
 
@@ -44,6 +48,8 @@ const Home = (props: HomeProps) => {
   const [isSoldOut, setIsSoldOut] = useState(false); // true when items remaining is zero
   const [isMinting, setIsMinting] = useState(false); // true when user got to press MINT
   const [itemsRemaining, setItemsRemaining] = useState(0);
+  const [displayAddress, setDisplayAddress] = useState("");
+  const [showFullAddress, setShowFullAddress] = useState(false);
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -159,29 +165,37 @@ const Home = (props: HomeProps) => {
       setIsSoldOut(itemsRemaining === 0);
       setStartDate(goLiveDate);
       setCandyMachine(candyMachine);
+      setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
     })();
   }, [wallet, props.candyMachineId, props.connection]);
 
-  return (
-    <PageWrapper
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div style={{textAlign:"center"}}>
-        {wallet.connected && (
-          <>
-            {/* <p>Address: {shortenAddress(wallet.publicKey?.toBase58() || "")}</p> */}
-            <div>Wallet: {wallet.publicKey?.toBase58() || ""}</div>
-          </>
-        )}
-        {wallet.connected && (
-          <div>Balance: {(balance || 0).toLocaleString()} SOL</div>
-        )}
+  useEffect(() => {
+    if (showFullAddress) {
+      setDisplayAddress(wallet.publicKey?.toBase58() || "");
+    } else {
+      setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
+    }
+  }, [wallet, showFullAddress]);
 
+  const handleNavClick = () => {
+    setShowFullAddress(!showFullAddress);
+  };
+
+  return (
+    <PageWrapper>
+      <NavbarCustom
+        clicked={handleNavClick}
+        balance={wallet.connected ? (balance || 0).toLocaleString() : ""}
+        walletAddress={wallet.connected ? displayAddress : ""}
+      ></NavbarCustom>
+      <div style={{ textAlign: "center", marginTop: "10%" }}>
+        {/* {wallet.connected && (
+            <div>Wallet: {wallet.publicKey?.toBase58() || ""}</div>
+        )} */}
+        {/* {wallet.connected && (
+          <div className="my-2">Balance: {(balance || 0).toLocaleString()} SOL</div>
+        )} */}
+        
         <MintContainer>
           {!wallet.connected ? (
             <ConnectButton>Connect Wallet</ConnectButton>
@@ -190,13 +204,15 @@ const Home = (props: HomeProps) => {
               <MintButton
                 disabled={isSoldOut || isMinting || !isActive}
                 onClick={onMint}
-                variant="contained"
+                // variant="contained"
+                style={{ backgroundColor: "rgb(193,159,216)", border: "none" }}
               >
+                {/* colors: (193,159,216), (76,220,188), (92, 162, 201) and black */}
                 {isSoldOut ? (
                   "SOLD OUT"
                 ) : isActive ? (
                   isMinting ? (
-                    <CircularProgress />
+                    <CircularProgress style={{color:'white'}}/>
                   ) : (
                     "MINT"
                   )
@@ -209,10 +225,12 @@ const Home = (props: HomeProps) => {
                   />
                 )}
               </MintButton>
-              <div>Items Remaining: {itemsRemaining}</div>
             </div>
           )}
         </MintContainer>
+        {wallet.connected && itemsRemaining > 0 && (
+          <div className="my-3 text-white" style={{fontStyle: "italic"}}>Items Remaining: {itemsRemaining}</div>
+        )}
       </div>
 
       <Snackbar
