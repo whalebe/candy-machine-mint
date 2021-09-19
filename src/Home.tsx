@@ -8,7 +8,7 @@ import * as anchor from "@project-serum/anchor";
 
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletDialogButton } from "@solana/wallet-adapter-material-ui";
 
 import {
@@ -25,7 +25,7 @@ const ConnectButton = styled(WalletDialogButton)`
   background-color: rgb(76,220,188) !important;
 `;
 
-//const logo = require("./logo_shapes_nobg.png")
+const logo = require("./logo_shapes_nobg.png")
 
 const PageWrapper = styled.div``;
 
@@ -62,13 +62,13 @@ const Home = (props: HomeProps) => {
 
   const [startDate, setStartDate] = useState(new Date(props.startDate));
 
-  const wallet = useWallet();
+  const wallet = useAnchorWallet();
   const [candyMachine, setCandyMachine] = useState<CandyMachine>();
 
   const onMint = async () => {
     try {
       setIsMinting(true);
-      if (wallet.connected && candyMachine?.program && wallet.publicKey) {
+      if (wallet && candyMachine?.program) {
         const mintTxId = await mintOneToken(
           candyMachine,
           props.config,
@@ -124,8 +124,8 @@ const Home = (props: HomeProps) => {
         severity: "error",
       });
     } finally {
-      if (wallet?.publicKey) {
-        const balance = await props.connection.getBalance(wallet?.publicKey);
+      if (wallet) {
+        const balance = await props.connection.getBalance(wallet.publicKey);
         setBalance(balance / LAMPORTS_PER_SOL);
       }
       setIsMinting(false);
@@ -134,7 +134,7 @@ const Home = (props: HomeProps) => {
 
   useEffect(() => {
     (async () => {
-      if (wallet?.publicKey) {
+      if (wallet) {
         const balance = await props.connection.getBalance(wallet.publicKey);
         setBalance(balance / LAMPORTS_PER_SOL);
       }
@@ -143,24 +143,11 @@ const Home = (props: HomeProps) => {
 
   useEffect(() => {
     (async () => {
-      if (
-        !wallet ||
-        !wallet.publicKey ||
-        !wallet.signAllTransactions ||
-        !wallet.signTransaction
-      ) {
-        return;
-      }
-
-      const anchorWallet = {
-        publicKey: wallet.publicKey,
-        signAllTransactions: wallet.signAllTransactions,
-        signTransaction: wallet.signTransaction,
-      } as anchor.Wallet;
+      if (!wallet) return;
 
       const { candyMachine, goLiveDate, itemsRemaining } =
         await getCandyMachineState(
-          anchorWallet,
+          wallet as anchor.Wallet,
           props.candyMachineId,
           props.connection
         );
@@ -174,10 +161,10 @@ const Home = (props: HomeProps) => {
   }, [wallet, props.candyMachineId, props.connection, updater]);
 
   useEffect(() => {
-    if (showFullAddress) {
-      setDisplayAddress(wallet.publicKey?.toBase58() || "");
-    } else {
-      setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
+    if (wallet  && showFullAddress) {
+      setDisplayAddress(wallet.publicKey.toBase58() || "");
+    } else if (wallet) {
+      setDisplayAddress(shortenAddress(wallet.publicKey.toBase58() || ""));
     }
   }, [wallet, showFullAddress]);
 
@@ -189,8 +176,8 @@ const Home = (props: HomeProps) => {
     <PageWrapper>
       <NavbarCustom
         clicked={handleNavClick}
-        balance={wallet.connected ? (balance || 0).toLocaleString() : ""}
-        walletAddress={wallet.connected ? displayAddress : ""}
+        balance={wallet ? (balance || 0).toLocaleString() : ""}
+        walletAddress={wallet ? displayAddress : ""}
       ></NavbarCustom>
       <div style={{ textAlign: "center", marginTop: "10%" }}>
         {/* {wallet.connected && (
@@ -202,7 +189,7 @@ const Home = (props: HomeProps) => {
         <img src="./logo_shapes_nobg.png" width="60%"></img>
         {/* colors: (193,159,216), (76,220,188), (92, 162, 201) and black */}
         <MintContainer>
-          {!wallet.connected ? (
+          {!wallet ? (
             <ConnectButton>connect wallet</ConnectButton>
           ) : (
             <div>
@@ -233,7 +220,7 @@ const Home = (props: HomeProps) => {
             </div>
           )}
         </MintContainer>
-        {wallet.connected && itemsRemaining > 0 && (
+        {wallet && itemsRemaining > 0 && (
           <div className="my-3 text-white" style={{fontStyle: "italic"}}>items remaining: {itemsRemaining}/1000</div>
         )} 
       </div>
