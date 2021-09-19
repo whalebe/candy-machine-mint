@@ -25,7 +25,7 @@ const ConnectButton = styled(WalletDialogButton)`
   background-color: rgb(76,220,188) !important;
 `;
 
-const logo = require("./logo_shapes_nobg.png")
+//const logo = require("./logo_shapes_nobg.png")
 
 const PageWrapper = styled.div``;
 
