@@ -25,6 +25,8 @@ const ConnectButton = styled(WalletDialogButton)`
   background-color: rgb(76,220,188) !important;
 `;
 
+const logo = require("./logo_shapes_nobg.png")
+
 const PageWrapper = styled.div``;
 
 const CounterText = styled.span``; // add your styles here
@@ -50,6 +52,7 @@ const Home = (props: HomeProps) => {
   const [itemsRemaining, setItemsRemaining] = useState(0);
   const [displayAddress, setDisplayAddress] = useState("");
   const [showFullAddress, setShowFullAddress] = useState(false);
+  const [updater, setUpdater] = useState(0);
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -87,6 +90,7 @@ const Home = (props: HomeProps) => {
             message: "Congratulations! Mint succeeded!",
             severity: "success",
           });
+          setUpdater((prev) => prev + 1)
         } else {
           setAlertState({
             open: true,
@@ -167,7 +171,7 @@ const Home = (props: HomeProps) => {
       setCandyMachine(candyMachine);
       setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
     })();
-  }, [wallet, props.candyMachineId, props.connection]);
+  }, [wallet, props.candyMachineId, props.connection, updater]);
 
   useEffect(() => {
     if (showFullAddress) {
@@ -195,26 +199,27 @@ const Home = (props: HomeProps) => {
         {/* {wallet.connected && (
           <div className="my-2">Balance: {(balance || 0).toLocaleString()} SOL</div>
         )} */}
-        
+        <img src="./logo_shapes_nobg.png" width="60%"></img>
+        {/* colors: (193,159,216), (76,220,188), (92, 162, 201) and black */}
         <MintContainer>
           {!wallet.connected ? (
             <ConnectButton>connect wallet</ConnectButton>
           ) : (
             <div>
-              <MintButton
+             <MintButton
                 disabled={isSoldOut || isMinting || !isActive}
                 onClick={onMint}
                 // variant="contained"
                 style={{ backgroundColor: "rgb(193,159,216)", border: "none" }}
               >
-                {/* colors: (193,159,216), (76,220,188), (92, 162, 201) and black */}
+                
                 {isSoldOut ? (
                   "SOLD OUT"
                 ) : isActive ? (
                   isMinting ? (
                     <CircularProgress style={{color:'white'}}/>
                   ) : (
-                    "MINT"
+                    "MINT for 0.2SOL"
                   )
                 ) : (
                   <Countdown
@@ -224,13 +229,13 @@ const Home = (props: HomeProps) => {
                     renderer={renderCounter}
                   />
                 )}
-              </MintButton>
+              </MintButton> 
             </div>
           )}
         </MintContainer>
         {wallet.connected && itemsRemaining > 0 && (
-          <div className="my-3 text-white" style={{fontStyle: "italic"}}>items remaining: {itemsRemaining}</div>
-        )}
+          <div className="my-3 text-white" style={{fontStyle: "italic"}}>items remaining: {itemsRemaining}/1000</div>
+        )} 
       </div>
 
       <Snackbar
