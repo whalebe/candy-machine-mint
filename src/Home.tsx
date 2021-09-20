@@ -154,6 +154,7 @@ const Home = (props: HomeProps) => {
 
       setItemsRemaining(itemsRemaining);
       setIsSoldOut(itemsRemaining === 0);
+      console.log(goLiveDate);
       setStartDate(goLiveDate);
       setCandyMachine(candyMachine);
       setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
