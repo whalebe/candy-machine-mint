@@ -156,6 +156,7 @@ const Home = (props: HomeProps) => {
       setIsSoldOut(itemsRemaining === 0);
       console.log(goLiveDate);
       setStartDate(goLiveDate);
+      console.log(startDate);
       setCandyMachine(candyMachine);
       setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
     })();
@@ -251,7 +252,7 @@ interface AlertState {
 const renderCounter = ({ days, hours, minutes, seconds, completed }: any) => {
   return (
     <CounterText>
-      {hours} hours, {minutes} minutes, {seconds} seconds
+      {days} days, {hours} hours, {minutes} minutes, {seconds} seconds
     </CounterText>
   );
 };
