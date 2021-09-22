@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Countdown from "react-countdown";
 import { CircularProgress, Snackbar } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
+import logo from "./assets/img/logo_shapes_nobg.png";
 
 import * as anchor from "@project-serum/anchor";
 
@@ -17,15 +18,16 @@ import {
   getCandyMachineState,
   mintOneToken,
   shortenAddress,
+  getMetadata,
 } from "./candy-machine";
 import NavbarCustom from "./NavbarCustom";
 import Button from "react-bootstrap/esm/Button";
 
 const ConnectButton = styled(WalletDialogButton)`
-  background-color: rgb(76,220,188) !important;
+  background-color: rgb(76, 220, 188) !important;
 `;
 
-const logo = require("./logo_shapes_nobg.png")
+
 
 const PageWrapper = styled.div``;
 
@@ -53,6 +55,7 @@ const Home = (props: HomeProps) => {
   const [displayAddress, setDisplayAddress] = useState("");
   const [showFullAddress, setShowFullAddress] = useState(false);
   const [updater, setUpdater] = useState(0);
+  const [meta, setMeta] = useState("");
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -90,7 +93,7 @@ const Home = (props: HomeProps) => {
             message: "Congratulations! Mint succeeded!",
             severity: "success",
           });
-          setUpdater((prev) => prev + 1)
+          setUpdater((prev) => prev + 1);
         } else {
           setAlertState({
             open: true,
@@ -151,20 +154,25 @@ const Home = (props: HomeProps) => {
           props.candyMachineId,
           props.connection
         );
-
+      const meta = await getMetadata(
+        new anchor.web3.PublicKey(
+          "122fYtUMoTathZkdq6pTY3D5foD1Gy9ZEJWDex4feoS9"
+        )
+      );
+      setMeta(meta.toString());
       setItemsRemaining(itemsRemaining);
       setIsSoldOut(itemsRemaining === 0);
-  console.log(goLiveDate);
-  console.log(startDate)
+      console.log(goLiveDate);
+      console.log(startDate);
       setStartDate(goLiveDate);
-     
+
       setCandyMachine(candyMachine);
       setDisplayAddress(shortenAddress(wallet.publicKey?.toBase58() || ""));
     })();
   }, [wallet, props.candyMachineId, props.connection, updater]);
 
   useEffect(() => {
-    if (wallet  && showFullAddress) {
+    if (wallet && showFullAddress) {
       setDisplayAddress(wallet.publicKey.toBase58() || "");
     } else if (wallet) {
       setDisplayAddress(shortenAddress(wallet.publicKey.toBase58() || ""));
@@ -189,25 +197,25 @@ const Home = (props: HomeProps) => {
         {/* {wallet.connected && (
           <div className="my-2">Balance: {(balance || 0).toLocaleString()} SOL</div>
         )} */}
-        <img src="./logo_shapes_nobg.png" width="60%"></img>
+    
+        <img src={logo} width="60%"></img>
         {/* colors: (193,159,216), (76,220,188), (92, 162, 201) and black */}
         <MintContainer>
           {!wallet ? (
             <ConnectButton>connect wallet</ConnectButton>
           ) : (
             <div>
-             <MintButton
+              <MintButton
                 disabled={isSoldOut || isMinting || !isActive}
                 onClick={onMint}
                 // variant="contained"
                 style={{ backgroundColor: "rgb(193,159,216)", border: "none" }}
               >
-                
                 {isSoldOut ? (
                   "SOLD OUT"
                 ) : isActive ? (
                   isMinting ? (
-                    <CircularProgress style={{color:'white'}}/>
+                    <CircularProgress style={{ color: "white" }} />
                   ) : (
                     "MINT for 0.2SOL"
                   )
@@ -219,13 +227,16 @@ const Home = (props: HomeProps) => {
                     renderer={renderCounter}
                   />
                 )}
-              </MintButton> 
+              </MintButton>
             </div>
           )}
-        </MintContainer>
+        </MintContainer> 
         {wallet && itemsRemaining > 0 && (
-          <div className="my-3 text-white" style={{fontStyle: "italic"}}>items remaining: {itemsRemaining}/1000</div>
+          <div className="my-3 text-white" style={{ fontStyle: "italic" }}>
+            items remaining: {itemsRemaining}/1000
+          </div>
         )} 
+      {/*   <h4>text</h4> */}
       </div>
 
       <Snackbar

@@ -11,7 +11,7 @@ const NavbarCustom = (props: any) => {
           {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="justify-content-end" style={{ width: "100%" }}>
-              {props.walletAddress && <Nav.Link className="text-white" onClick={props.clicked}>{props.balance} SOL: {props.walletAddress}</Nav.Link>}
+            <Nav.Link className="text-white" href ="https://twitter.com/shapesOfSolana" >Twitter </Nav.Link><Nav.Link className="text-white" href ="https://discord.gg/BjEB2X5yzw" >Discord</Nav.Link>{props.walletAddress && <Nav.Link className="text-white" onClick={props.clicked}>{props.balance} SOL: {props.walletAddress}</Nav.Link>}
             </Nav>
           </Navbar.Collapse>
         </Container>

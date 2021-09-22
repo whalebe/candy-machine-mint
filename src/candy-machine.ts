@@ -189,7 +189,8 @@ export const getCandyMachineState = async (
   };
 }
 
-const getMasterEdition = async (
+
+export const getMasterEdition = async (
   mint: anchor.web3.PublicKey
 ): Promise<anchor.web3.PublicKey> => {
   return (
@@ -205,7 +206,7 @@ const getMasterEdition = async (
   )[0];
 };
 
-const getMetadata = async (
+export const getMetadata = async (
   mint: anchor.web3.PublicKey
 ): Promise<anchor.web3.PublicKey> => {
   return (
