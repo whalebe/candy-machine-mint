@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Countdown from "react-countdown";
 import { CircularProgress, Snackbar } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import logo from "./assets/img/logo_shapes_nobg.png";
+import logo from "./assets/img/whalebe_bn.png";
 
 import * as anchor from "@project-serum/anchor";
 
@@ -156,7 +156,7 @@ const Home = (props: HomeProps) => {
         );
       const meta = await getMetadata(
         new anchor.web3.PublicKey(
-          "122fYtUMoTathZkdq6pTY3D5foD1Gy9ZEJWDex4feoS9"
+          "3fsCerG3iZKeN4CKw8CNynD5RqVvab7bs2u22MsihuPo"
         )
       );
       setMeta(meta.toString());
@@ -217,7 +217,7 @@ const Home = (props: HomeProps) => {
                   isMinting ? (
                     <CircularProgress style={{ color: "white" }} />
                   ) : (
-                    "MINT for 0.2SOL"
+                    "MINT for 1 SOL"
                   )
                 ) : (
                   <Countdown
